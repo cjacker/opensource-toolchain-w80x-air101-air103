@@ -1,8 +1,8 @@
 # opensource-toolchain-w80x
 Opensource toolchain for HLK w80x series based on T-Head XT-E804
 
+# Draft, not finished, **to be written**
 
-**to be written**
 
 Hardware:
 - HLK w80x board or Luat AIR 101/103
@@ -14,17 +14,25 @@ Software:
 - debugger: t-head debug server / gdb
 - programmer : wm_tool in wm_sdk_w806
 
+
+C-Sky GCC is 6.3.0 , a little bit outdated.
+
+SDk is partial close source.
+
+T-Head debug server is close source.
+
+
 CK-Link Pin out:
 ```
- +--------------+
- | TDI ▪ •  GND |
- | TDO • •  GND |
-   TCK • •  GND |
-    -- • •  --  |
-  nRST • •  TMS |
- |  -- • •  --  |
- |VREF • •  TRST|
- +--------------+
+ +-------------+
+ | TDI ▪ • GND |
+ | TDO • • GND |
+   TCK • • GND |
+    -- • • --  |
+  nRST • • TMS |
+ |  -- • • --  |
+ |VREF • • TRST|
+ +-------------+
 ```
 
 
