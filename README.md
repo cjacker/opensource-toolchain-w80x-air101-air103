@@ -15,7 +15,14 @@ Software:
 - programmer : wm_tool in wm_sdk_w806
 
 
-C-Sky GCC is 6.3.0 , a little bit outdated.
+C-Sky GCC is 6.3.0:
+
+https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619529419771/csky-elf-noneabiv2-tools-x86_64-newlib-20210423.tar.gz
+
+https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619529111421/csky-elfabiv2-tools-x86_64-minilibc-20210423.tar.gz
+
+https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619527806432/csky-linux-uclibc-tools-x86_64-uclibc-linux-4.9.56-20210423.tar.gz
+
 
 SDk is partial close source.
 
