@@ -254,11 +254,14 @@ Connect target board to CK-Link (refer to below table) and plug CK-Link to PC US
 
 ## Make your own CK-Link Lite debugger with STM32F103
 
-Find the cklink-lite firmware 'cklink_lite.hex' from the C-Sky debug server dir. if you follow this tutorial, the firmware should at `/opt/csky-debug-server/links/Ck-Link/cklink_lite.hex`. 
+C-Sky debug server contains a set of cklink firmware files, if you have a STM32F103 devboard, you can use 'cklink_lite.hex' shipped with C-Sky debug server to make your own CK-Link debugger. 
 
-Copy 'cklink_lite.hex' to home dir and open it with your favorite editor, here I use 'vim':
+'cklink_lite_iap.hex' (address range from 0x0800_0000 to 0x0800_4000) is the bootloader and 'cklink_lite.hex' (address range start from 0x0800_4000) is the firmware. the IAP firmware not works with STM32F103 bluepill (due to the circuit differences between CKLink Lite debugger and STM32F103 bluepill), we need modify the 'cklink_lite.hex' first to copy the vector table to the beginning of the flash:
 
-Copy the lines from address 0x4000 to 0x4100 to a seperate file, such as 'tmp.hex'.
+- open 'cklink_lite.hex' in your favorite editor.
+- copy the lines before address 0x4100 and paste them to the start of file.
+- modify address of all lines just copied, from 0x40XX to 0x00XX.
+- fix the checksum of all lines just modified.
 
 ```
 
