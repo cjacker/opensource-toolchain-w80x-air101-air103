@@ -68,6 +68,9 @@ Power supply:
 - the **libraries of Wi-Fi / BT** in wm_sdk_w80x is **close source**.
 - **'c-sky debug server'** is **close source**.
 
+
+# Compiler
+
 C-Sky GCC is 6.3.0:
 
 https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619529419771/csky-elf-noneabiv2-tools-x86_64-newlib-20210423.tar.gz
