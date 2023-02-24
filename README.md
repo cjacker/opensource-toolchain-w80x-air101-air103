@@ -64,9 +64,9 @@ Power supply:
 **NOTE:**
 - The APIs of 'wm_sdk_w806' and 'wm_sdk_w80x' differs a lot. 
 - 'wm_sdk_w806' can be used with AIR101 / 103 / W806 / W801 / W800, but lack Wi-Fi / BT libraries.
-- 'libdsp.a' (csi-dsp) and 'secboot.bin' in wm_sdk_w806 is close source. If you do not use DSP, you can get rid of it. 
-- the Wi-Fi / BT related codes in wm_sdk_w80x is close source.
-- 'c-sky debug server' is close source.
+- **'libdsp.a'** (csi-dsp) and 'secboot.bin' in wm_sdk_w806 is **close source**. If you do not use DSP, you can get rid of it. 
+- the **libraries of Wi-Fi / BT** in wm_sdk_w80x is **close source**.
+- **'c-sky debug server'** is **close source**.
 
 C-Sky GCC is 6.3.0:
 
