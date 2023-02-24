@@ -235,11 +235,22 @@ Connect target board to CK-Link (refer to below table) and plug CK-Link to PC US
 | GND      | GND        |
 
 
-You may also create a udev rule to set device permission correctly (to allow normal user read / write the CK-Link device).
+You may also create a udev rule '/etc/udev/rules.d/99-csky-cklink.rules' with below contents to set device permission correctly (allow normal user read / write the CK-Link device).
 ```
+# For Hi-Link CK-Link lite
+SUBSYSTEM=="usb", ATTR{idVendor}="32bf", ATTR{idProduct}=="b210", MODE="666"
+# For Bouffalo Lab CK-Link lite
+SUBSYSTEM=="usb", ATTR{idVendor}="42bf", ATTR{idProduct}=="b210", MODE="666"
+```
+
+After this udev rules saved, please run:
+```
+udevadm trigger
+udevadm control --reload
 ```
 
 Then involk csky debug server as mentioned:
+
 ```
 # here I use wrapper script
 csky-debug-server
@@ -272,8 +283,23 @@ Target Chip Info:
 
 GDB connection command for CPUs(CPU0):
         target remote 127.0.0.1:1025
-        target remote 192.168.2.148:1025
-        target remote 192.168.122.1:1025
-        target remote 172.17.0.1:1025
+```
+
+Then open new terminal window, and run:
+
+```
+csky-abiv2-elf-gdb bin/build/W806/image/W806.elf
+```
+
+After '(cskygdb)' show up:
+
+```
+(cskygdb) target remote :1025
+Remote debugging using :1025
+0x08013482 in HAL_GetTick () at wm_cpu.c:108
+108         return uwTick;
+(cskygdb) b main
+Breakpoint 1 at 0x8011988: file main.c, line 46.
+(cskygdb) c
 ```
 
