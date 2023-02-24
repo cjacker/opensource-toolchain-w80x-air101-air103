@@ -45,29 +45,28 @@ Power supply:
 # Hardware prerequiest
 - AIR 101 or 103 devboards and HLK-W800-KIT
   + HLK-W806 devboards is not USB type-c and not suite for breadboard.
+  + HLK-W806 need manual reset when programming.
   + HLK-W801 devboards has some hardware issue with Linux
   
 - a CK-Link Debugger
   + CK-Link Pro / Lite (a little bit expensive)
-  + Sipeed rv debugger plus can work as a CK-Link lite
+  + [Sipeed rv debugger plus](https://github.com/sipeed/RV-Debugger-BL702/) with [CK-Link lite firmware](https://github.com/bouffalolab/bl_mcu_sdk/tree/master/tools/cklink_firmware)
   + stm32f103 with CK-Link lite firmware.
   
+<img src="https://github.com/cjacker/opensource-toolchain-w80x/raw/main/boards.png" />
 
-Opensource toolchain for HLK w80x series based on T-Head XT-E804
+# Toolchain overview
+- Compiler: csky gcc
+- SDK : wm_sdk_w806 / wm_sdk_w80x
+- Programming: wm_tool in wm_sdk
+- Debugging: c-sky debug server / gdb
 
-# Draft, not finished, **to be written**
-
-
-Hardware:
-- HLK w80x board or Luat AIR 101/103
-- cklink / cklink-lite / sipeed rv debugger plus / stm32f103
-
-Software:
-- compiler : csky gcc
-- sdk: wm_sdk_w806/w80x
-- debugger: t-head debug server / gdb
-- programmer : wm_tool in wm_sdk_w806
-
+**NOTE:**
+- The APIs of 'wm_sdk_w806' and 'wm_sdk_w80x' differs a lot. 
+- 'wm_sdk_w806' can be used with AIR101 / 103 / W806 / W801 / W800, but lack Wi-Fi / BT libraries.
+- 'libdsp.a' (csi-dsp) and 'secboot.bin' in wm_sdk_w806 is close source. If you do not use DSP, you can get rid of it. 
+- the Wi-Fi / BT related codes in wm_sdk_w80x is close source.
+- 'c-sky debug server' is close source.
 
 C-Sky GCC is 6.3.0:
 
