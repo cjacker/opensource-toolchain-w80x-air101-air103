@@ -44,10 +44,11 @@ Power supply:
 
 # Hardware prerequiest
 - AIR 101 or 103 devboards and HLK-W800-KIT
-  + HLK-W806 devboards is not USB type-c and not suite for breadboard.
-  + HLK-W806 need manual reset when programming.
-  + HLK-W801 devboards has some hardware issue with Linux
-  
+  + HLK-W806-KIT devboards is not USB type-c and not suite for breadboard.
+  + HLK-W806-KIT need manual reset when programming.
+  + HLK-W801-KIT devboards has some hardware issue with Linux
+  + HLK-W800-KIT have base and pro version
+
 - CK-Link debugger
   + T-Head or HLK CK-Link debugger
   + Or stm32f103 bluepill with modified CK-Link lite firmware.
