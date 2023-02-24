@@ -1,4 +1,58 @@
-# opensource-toolchain-w80x
+# opensource toolchain for HLK W80x and Luat AIR101 / 103
+
+W80x are made by [WinnerMicro](https://www.winnermacro.com) and are based on one 240 Mhz XT-E804 core. The core itself is made on top of the C-SKY architecture (Not ARM, Not RISCV) developed by C-SKY Microsystems Co.,Ltd. C-SKY Microsystems was aquired by Ali serveral years ago and renamed to [T-Head](https://www.t-head.cn)).
+
+Somebody may refer these chips as 'HLK-W80x', it's a mistake. 'W80x' is the correct name, 'HLK-W80x-KIT' stands for a series boards made by [Hi-Link](https://www.hlktech.com).
+
+W80x line-up include 3 microcontrollers:
+- W806 - XT-E804, QFN56, 6mmx6mm.
+- W801 - XT-E804 + Wi-Fi + Bluetooth, QFN56, 6mmx6mm. **W801 = W806 + Wi-Fi + BT**
+- W800 - XT-E804 + Wi-Fi + Bluetooth, QFN32, 4mmx4mm. **W800 = W801 - some pins**
+
+All these chips are available as devboards (about 1 $).
+
+Besides W80x, there is another vendor 'Luat' also made MCU based on XT-E804, includes AIR101 and 103.
+- AIR101 - XT-E804, QFN32, 4mmx4mm
+- AIR103 - XT-E804, QFN56, 6mmx6mm **AIR103 = W806**
+
+All these 2 chips are also availble as devboards (about 1 $)
+
+Let's focus on the base model W806 / AIR103. The specification:
+
+- 32-bit XT-E804 processor, frequency up to 240MHz, built-in DSP, FPU and security engine
+- Built-in 1MB Flash, 288KB RAM
+- Integrated PSRAM interface, supports up to 64MB external PSRAM memory
+- 6-channel UART high-speed interface
+- 4-channel 16-bit ADC, the highest sampling rate is 1KHz
+- 1 high-speed SPI interface (slave interface), supports up to 50MHz
+- master/slave SPI interface
+- 1 SDIO_HOST interface, supports SDIO2.0, SDHC, MMC4.2
+- 1 SDIO_DEVICE, supports SDIO2.0, the maximum throughput rate is 200Mbps
+- 1 I²C controller
+- Integrated GPIO controller supporting up to 44 GPIOs
+- 5 channel PWM interface
+- 1 Duplex I²S controller
+- LCD controller, supports 4x32 interface
+- 1 7816 interface
+- 15 Touch Sensors integrated
+
+Power supply:
+- 3.3V single power supply
+- Support work, sleep, standby, shutdown modes
+- Standby power consumption is less than 10uA
+
+
+# Hardware prerequiest
+- AIR 101 or 103 devboards and HLK-W800-KIT
+  + HLK-W806 devboards is not USB type-c and not suite for breadboard.
+  + HLK-W801 devboards has some hardware issue with Linux
+  
+- a CK-Link Debugger
+  + CK-Link Pro / Lite (a little bit expensive)
+  + Sipeed rv debugger plus can work as a CK-Link lite
+  + stm32f103 with CK-Link lite firmware.
+  
+
 Opensource toolchain for HLK w80x series based on T-Head XT-E804
 
 # Draft, not finished, **to be written**
