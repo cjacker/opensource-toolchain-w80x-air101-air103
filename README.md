@@ -48,10 +48,9 @@ Power supply:
   + HLK-W806 need manual reset when programming.
   + HLK-W801 devboards has some hardware issue with Linux
   
-- a CK-Link Debugger
-  + CK-Link Pro / Lite (a little bit expensive)
-  + [Sipeed rv debugger plus](https://github.com/sipeed/RV-Debugger-BL702/) with [CK-Link lite firmware](https://github.com/bouffalolab/bl_mcu_sdk/tree/master/tools/cklink_firmware)
-  + stm32f103 with CK-Link lite firmware.
+- CK-Link debugger
+  + T-Head or HLK CK-Link debugger
+  + Or stm32f103 bluepill with modified CK-Link lite firmware.
   
 <img src="https://github.com/cjacker/opensource-toolchain-w80x/raw/main/boards.png" />
 
@@ -167,9 +166,12 @@ If you work with 'W801 / W800 / AIR 101 /AIR 103' devboards, there is no effect 
 
 # Debugging
 
-To debugging XT-E804 based MCU, you have to use CK-Link adapter and T-Head debug server (close source software).
+To debugging XT-E804 based MCU, you have to use a CK-Link debugger and T-Head debug server (close source software).
 
-# C-Sky debug server
+**If you have any stm32f103 devboard (such as bluepill), there is not neccesary to buy a CK-Link debugger, please refer to below sections to make a CK-Link Lite debugger yourself.**
+
+## C-Sky debug server
+
 The T-Head debug server can be downlowed from https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource//1673423345494/T-Head-DebugServer-linux-x86_64-V5.16.7-20230109.sh.tar.gz
 
 After download finished:
@@ -206,7 +208,22 @@ export LD_LIBRARY_PATH=/opt/csky-debug-server
 ./DebugServerConsole.elf $@
 ```
 
-# CK-Link pin out
+You may also need to create a udev rule '/etc/udev/rules.d/99-csky-cklink.rules' with below contents to set device permission correctly (allow normal user read / write the CK-Link device).
+
+```
+# For Hi-Link CK-Link lite
+SUBSYSTEM=="usb", ATTR{idVendor}="32bf", ATTR{idProduct}=="b210", MODE="666"
+# For Bouffalo Lab CK-Link lite
+SUBSYSTEM=="usb", ATTR{idVendor}="42bf", ATTR{idProduct}=="b210", MODE="666"
+```
+
+After this udev rules saved, please run:
+```
+udevadm trigger
+udevadm control --reload
+```
+
+## Official T-Head or HLK CK-Link debugger
 
 The Ck-Link pinout:
 
@@ -222,34 +239,33 @@ The Ck-Link pinout:
  +-------------+
 ```
 
-Official CK-Link adapter from T-Head do not supply power to target board, but some thirdparty adapter will.
+Official CK-Link debugger from T-Head or HLK do not supply power to target board, you need supply power to target board with another USB cable.
 
 Connect target board to CK-Link (refer to below table) and plug CK-Link to PC USB port:
 
 | CK-Link  |   board    |
 |----------|------------|
-| VRef/3V3 | 3V3        |
+| VRef     | 3V3        |
 | TRST     | RST        |
 | TCK      | CLK(PA1)   |
 | TMS      | DAT(PA4)   |
 | GND      | GND        |
 
 
-You may also create a udev rule '/etc/udev/rules.d/99-csky-cklink.rules' with below contents to set device permission correctly (allow normal user read / write the CK-Link device).
-```
-# For Hi-Link CK-Link lite
-SUBSYSTEM=="usb", ATTR{idVendor}="32bf", ATTR{idProduct}=="b210", MODE="666"
-# For Bouffalo Lab CK-Link lite
-SUBSYSTEM=="usb", ATTR{idVendor}="42bf", ATTR{idProduct}=="b210", MODE="666"
+## Make your own CK-Link Lite debugger with STM32F103
+
+Find the cklink-lite firmware 'cklink_lite.hex' from the C-Sky debug server dir. if you follow this tutorial, the firmware should at `/opt/csky-debug-server/links/Ck-Link/cklink_lite.hex`. 
+
+Copy 'cklink_lite.hex' to home dir and open it with your favorite editor, here I use 'vim':
+
+Copy the lines from address 0x4000 to 0x4100 to a seperate file, such as 'tmp.hex'.
+
 ```
 
-After this udev rules saved, please run:
-```
-udevadm trigger
-udevadm control --reload
 ```
 
-Then involk csky debug server as mentioned:
+
+Then invoke csky debug server as mentioned:
 
 ```
 # here I use wrapper script
