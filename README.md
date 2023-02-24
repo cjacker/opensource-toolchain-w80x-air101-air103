@@ -101,11 +101,7 @@ Use 'wm_sdk_w806' as example.
 git clone https://github.com/IOsetting/wm-sdk-w806.git
 ```
 
-For AIR 101 / 103 devboards and W801 / W800 devboards, the RTS pin of on-board ch34x already connect to RESET pin of MCU, you need apply a patch to enable auto-reset when programming / erasing:
 
-```
-sed -i 's/-rs at/-rs rts/g' tools/W806/rules.mk
-```
 
 
 The dir structure of 'wm_sdk_w806' SDK:
@@ -135,7 +131,7 @@ You can use `make menuconfig` to change some options of the SDK. for more usage,
 
 Before start programming, you need connect the devboard to PC and get the USB uart device name, usually, it's `ttyUSB0`. you can find it with `ls /dev/tty*`.
 
-Then, run `make menuconfig`, goto 'Download Configuration', set 'download port' to `ttyUSB0`. Then save / exit menuconfig and program the target firmware to device:
+Then, run `make menuconfig`, goto 'Download Configuration', set 'download port' to `ttyUSB0`. Then save / exit menuconfig and program the target firmware to device by:
 
 ```
 make flash
@@ -161,8 +157,11 @@ download completed.
 reset command has been sent.
 ```
 
-If you work with 'W801 / W800 / AIR 101 /AIR 103' devboards, there is no effect to press RESET button, you have to enable 'auto-reset'(refer to SDK section to find out how to enable it).
+For AIR 101 / 103 devboards and W801 / W800 devboards, the RTS pin of on-board ch34x already connect to RESET pin of MCU, there is no response if you press the RESET button when programming, you need apply a patch to enable auto-reset. To enable it, at the top dir of 'wm_sdk_w806' or 'wm_sdk_w80x', run:
 
+```
+sed -i 's/-rs at/-rs rts/g' tools/W806/rules.mk
+```
 
 # Debugging
 
