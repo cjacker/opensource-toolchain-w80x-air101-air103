@@ -170,7 +170,7 @@ To debugging XT-E804 based MCU, you have to use a CK-Link debugger and T-Head de
 
 **If you have any stm32f103 devboard (such as bluepill), there is not neccesary to buy a CK-Link debugger, please refer to below sections to make a CK-Link Lite debugger yourself.**
 
-## C-Sky debug server
+## Install C-Sky debug server
 
 The T-Head debug server can be downlowed from https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource//1673423345494/T-Head-DebugServer-linux-x86_64-V5.16.7-20230109.sh.tar.gz
 
@@ -213,8 +213,6 @@ You may also need to create a udev rule '/etc/udev/rules.d/99-csky-cklink.rules'
 ```
 # For Hi-Link CK-Link lite
 SUBSYSTEM=="usb", ATTR{idVendor}="32bf", ATTR{idProduct}=="b210", MODE="666"
-# For Bouffalo Lab CK-Link lite
-SUBSYSTEM=="usb", ATTR{idVendor}="42bf", ATTR{idProduct}=="b210", MODE="666"
 ```
 
 After this udev rules saved, please run:
@@ -223,7 +221,7 @@ udevadm trigger
 udevadm control --reload
 ```
 
-## Official T-Head or HLK CK-Link debugger
+## Use T-Head or HLK CK-Link debugger
 
 The Ck-Link pinout:
 
@@ -263,12 +261,24 @@ C-Sky debug server contains a set of cklink firmware files, if you have a STM32F
 - modify address of all lines just copied, from 0x40XX to 0x00XX.
 - fix the checksum of all lines just modified.
 
-```
+I wrote a tool to convert it automatically, you can find it in `cklink-lite-fw-convertor` dir.
 
-```
+And the pre-converted '[cklink-lite-2.36_for-stm32f103.hex](https://raw.githubusercontent.com/cjacker/opensource-toolchain-w80x/main/cklink-lite-fw-convertor/cklink_lite-2.36_for-stm32f103.hex)' can be used to program to STM32F103 directly. If the firmware version is outdated, you can use `cklink-lite-fw-convertor` to convert the latest firmware yourself.
+
+After STM32F103 programmed, connect STM32F103 with your target devboard as below table and plug STM32F103 to PC USB port.
+
+| STM32F103 | XT-E804  |
+|-----------|----------|
+| A0        | RESET    |
+| A1        | CLK(PA1) |
+| A5        | DAT(PA4) |
+| 3V3       | 3V3      |
+| GND       | GND      |
 
 
-Then invoke csky debug server as mentioned:
+# Launch C-Sky debug server
+
+Then invoke C-Sky debug server as mentioned above:
 
 ```
 # here I use wrapper script
@@ -304,6 +314,8 @@ GDB connection command for CPUs(CPU0):
         target remote 127.0.0.1:1025
 ```
 
+## Debug
+
 Then open new terminal window, and run:
 
 ```
@@ -321,4 +333,5 @@ Remote debugging using :1025
 Breakpoint 1 at 0x8011988: file main.c, line 46.
 (cskygdb) c
 ```
+
 
