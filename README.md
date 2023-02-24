@@ -71,21 +71,145 @@ Power supply:
 
 # Compiler
 
-C-Sky GCC is 6.3.0:
+T-Head provide prebuilt C-Sky GNU toolchain (GCC v6.3.0), you can download it from T-Head [Open Chip Community](https://occ.t-head.cn/community/download?id=3885366095506644992), but it may require registering an account first.
 
-https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619529419771/csky-elf-noneabiv2-tools-x86_64-newlib-20210423.tar.gz
+To skip the registration process, You can download the C-Sky GNU toolchain from [here](https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619529111421/csky-elfabiv2-tools-x86_64-minilibc-20210423.tar.gz) directly. I also upload a copy to github, you can also download it from [here](https://github.com/cjacker/wm_sdk_w80x/releases/download/init/csky-elfabiv2-tools-x86_64-minilibc-20210423.tar.gz).
 
-https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619529111421/csky-elfabiv2-tools-x86_64-minilibc-20210423.tar.gz
+After download it, extract it to somewhere, for example:
 
-https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource/1356021/1619527806432/csky-linux-uclibc-tools-x86_64-uclibc-linux-4.9.56-20210423.tar.gz
+```
+mkdir /opt/csky-toolchain
+sudo tar zxvf csky-elfabiv2-tools-x86_64-minilibc-20210423.tar.gz -C /opt/csky-toolchain
+```
+
+And, do not forget add `/opt/csky-toolchain/bin` to PATH env.
+
+The triplet of C-Sky GNU toolchain is **csky-abiv2-elf**.
 
 
-SDk is partial close source.
+# SDK
 
-T-Head debug server is close source.
+As mentioned above:
+
+- [wm_sdk_w806](https://github.com/IOsetting/wm-sdk-w806) can be used for W806 / AIR101 / AIR103, you can also use it with W801 / W800, but lack Wi-Fi / BT support. 
+- [wm_sdk_w80x](https://github.com/cjacker/wm_sdk_w80x) can be used for W801 / W800, it provide Wi-Fi / BT support static library (but without source).
+
+Although, APIs of these 2 SDK differ a lot, but the sdk dir structure, code organization and usage is similar.
+
+Use 'wm_sdk_w806' as example.
+
+```
+git clone https://github.com/IOsetting/wm-sdk-w806.git
+```
+
+For AIR 101 / 103 devboards and W801 / W800 devboards, the RTS pin of on-board ch34x already connect to RESET pin of MCU, you need apply a patch to enable auto-reset when programming / erasing:
+
+```
+sed -i 's/-rs at/-rs rts/g' tools/W806/rules.mk
+```
 
 
-CK-Link Pin out:
+The dir structure of 'wm_sdk_w806' SDK:
+
+```
+wm-sdk-w806
+├─app              # User application code
+├─bin              # Compilation results
+├─demo             # Examples
+├─include          # SDK header files 
+├─ld               # Linker scripts
+├─lib              # DSP Libraries in binary form
+├─Makefile
+├─platform         # SDK source code
+└─tools            # Utilities
+```
+
+Compare with 'wm-sdk-w806', 'wm-sdk-w80x' SDK also have 'src' dir contains source codes for some static binary libraries (but not all).
+
+The default user application codes of 'wm_sdk_w806' is for 'HLK-W806-KIT' devboard to blink 3 LEDs connected to 'PB0 / PB1 / PB2' (PWM 0 / 1 /2). If you use AIR 103 devboard, 3 LEDs on-board is connected to PB24 / PB25 / PB26, you have to modify the codes.
+
+To build the 'user application codes', type 'make' directly. the target file 'W806.\*' will be generated at 'bin/W806' dir.
+
+You can use `make menuconfig` to change some options of the SDK. for more usage, try `make help`.
+
+# Programming
+
+Before start programming, you need connect the devboard to PC and get the USB uart device name, usually, it's `ttyUSB0`. you can find it with `ls /dev/tty*`.
+
+Then, run `make menuconfig`, goto 'Download Configuration', set 'download port' to `ttyUSB0`. Then save / exit menuconfig and program the target firmware to device:
+
+```
+make flash
+```
+
+The output looks like:
+
+```
+connecting serial...
+serial connected.
+wait serial sync.........
+please manually reset the device.
+```
+
+For HLK-W806-KIT, you need press the 'RESET' button here to continue.
+
+```
+serial sync sucess.
+mac CC-CC-CC-CC-CC-CC.
+start download.
+0% [###] 100%
+download completed.
+reset command has been sent.
+```
+
+If you work with 'W801 / W800 / AIR 101 /AIR 103' devboards, there is no effect to press RESET button, you have to enable 'auto-reset'(refer to SDK section to find out how to enable it).
+
+
+# Debugging
+
+To debugging XT-E804 based MCU, you have to use CK-Link adapter and T-Head debug server (close source software).
+
+# C-Sky debug server
+The T-Head debug server can be downlowed from https://occ-oss-prod.oss-cn-hangzhou.aliyuncs.com/resource//1673423345494/T-Head-DebugServer-linux-x86_64-V5.16.7-20230109.sh.tar.gz
+
+After download finished:
+
+```
+tar xf T-Head-DebugServer-linux-x86_64-V5.16.7-20230109.sh.tar.gz
+tail -n +282 T-Head-DebugServer-linux-x86_64-V5.16.7-20230109.sh >csky-debug-server.tar.gz
+```
+Then extract the 'csky-debug-server.tar.gz' to somewhere, for example:
+```
+mkdir -p /opt/csky-debug-server
+sudo tar zxf csky-debug-server.tar.gz -C /opt/csky-debug-server
+```
+
+The command of csky-debug-server is `DebugServerConsole.elf`, it depend on some libraries installed at `/opt/csky-debug-server` dir,you have to run it as:
+
+```
+cd /opt/csky-debug-server
+./DebugServerConsole.elf
+```
+
+Or
+
+```
+LD_LIBRARY_PATH=/opt/csky-debug-server /opt/csky-debug-server/DebugServerConsole.elf
+```
+
+You can save below wrapper script as `csky-debug-server` and put it to `/usr/bin`:
+
+```
+#!/usr/bin/bash
+cd /opt/csky-debug-server
+export LD_LIBRARY_PATH=/opt/csky-debug-server
+./DebugServerConsole.elf $@
+```
+
+# CK-Link pin out
+
+The Ck-Link pinout:
+
 ```
  +-------------+
  | TDI ▪ • GND |
@@ -98,10 +222,11 @@ CK-Link Pin out:
  +-------------+
 ```
 
+Official CK-Link adapter from T-Head do not supply power to target board, but some thirdparty adapter will.
 
-Connection:
+Connect target board to CK-Link (refer to below table) and plug CK-Link to PC USB port:
 
-| CK-Link  | W806 board |
+| CK-Link  |   board    |
 |----------|------------|
 | VRef/3V3 | 3V3        |
 | TRST     | RST        |
@@ -109,17 +234,18 @@ Connection:
 | TMS      | DAT(PA4)   |
 | GND      | GND        |
 
+
+You may also create a udev rule to set device permission correctly (to allow normal user read / write the CK-Link device).
 ```
-CKLink    :     W806
-VREF/VCC  ->    3V3
-TRST      ->    RST
-TCK       ->    CLK(PA1)
-TMS       ->    DAT(PA4)
-GND       ->    GND
 ```
 
+Then involk csky debug server as mentioned:
+```
+# here I use wrapper script
+csky-debug-server
+```
 
-Debug server connected:
+If all good, the output looks like:
 
 ```
 +---                                                    ---+
