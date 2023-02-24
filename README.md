@@ -1,6 +1,6 @@
 # opensource toolchain for W80x and AIR101 / 103
 
-W80x series MCU are made by [WinnerMicro](https://www.winnermacro.com), these series MCU are based on one 240 Mhz XT-E804 core. The core itself is made on top of the C-SKY architecture (Not ARM, Not RISCV) developed by C-SKY Microsystems. Serveral years ago, C-SKY Microsystems was aquired by Ali ago and renamed to [T-Head](https://www.t-head.cn)).
+W80x series MCU are made by [WinnerMicro](https://www.winnermacro.com), these series MCU are based on one 240 Mhz XT-E804 core. The core itself is made on top of the C-SKY architecture (Not ARM, Not RISCV) developed by C-SKY Microsystems. Serveral years ago, C-Sky Microsystems was aquired by Alibaba and renamed to [T-Head](https://www.t-head.cn)).
 
 Somebody may refer these chips as 'HLK-W80x', it's a mistake. 'W80x' is the correct name, 'HLK-W80x-KIT' stands for a series boards made by [Hi-Link](https://www.hlktech.com).
 
