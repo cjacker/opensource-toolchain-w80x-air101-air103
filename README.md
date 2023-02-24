@@ -1,4 +1,4 @@
-# opensource toolchain for HLK W80x and Luat AIR101 / 103
+# opensource toolchain for W80x and AIR101 / 103
 
 W80x are made by [WinnerMicro](https://www.winnermacro.com) and are based on one 240 Mhz XT-E804 core. The core itself is made on top of the C-SKY architecture (Not ARM, Not RISCV) developed by C-SKY Microsystems Co.,Ltd. C-SKY Microsystems was aquired by Ali serveral years ago and renamed to [T-Head](https://www.t-head.cn)).
 
