@@ -5,15 +5,15 @@ W80x series MCU are made by [WinnerMicro](https://www.winnermacro.com), these se
 Somebody may refer these chips as 'HLK-W80x', it's a mistake. 'W80x' is the correct name, 'HLK-W80x-KIT' stands for a series boards made by [Hi-Link](https://www.hlktech.com).
 
 W80x line-up include 3 microcontrollers:
-- W806 - XT-E804, QFN56, 6mmx6mm.
-- W801 - XT-E804 + Wi-Fi + Bluetooth, QFN56, 6mmx6mm. **W801 = W806 + Wi-Fi + BT**
-- W800 - XT-E804 + Wi-Fi + Bluetooth, QFN32, 4mmx4mm. **W800 = W801 - some pins**
+- W806 - XT-E804, QFN56, 6mmx6mm. 1M FLASH, 288K RAM.
+- W801 - XT-E804 + Wi-Fi + Bluetooth, QFN56, 6mmx6mm. 2M FLASH, 288K RAM. **W801 = W806 + Wi-Fi + BT**
+- W800 - XT-E804 + Wi-Fi + Bluetooth, QFN32, 4mmx4mm. 2M FLASH, 288K RAM. **W800 = W801 - some pins**
 
 All these chips are available as devboards (about 1 $).
 
 Besides W80x, there is another vendor 'Luat' also made MCU based on XT-E804, includes AIR101 and 103.
-- AIR101 - XT-E804, QFN32, 4mmx4mm
-- AIR103 - XT-E804, QFN56, 6mmx6mm **AIR103 = W806**
+- AIR101 - XT-E804, QFN32, 4mmx4mm. 2M FLASH, 176K RAM.
+- AIR103 - XT-E804, QFN56, 6mmx6mm. 1M FLASH, 288K RAM. **AIR103 = W806**
 
 All these 2 chips are also availble as devboards (about 1 $)
 
