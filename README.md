@@ -50,8 +50,8 @@ Power supply:
   + HLK-W800-KIT have base and pro version
 
 - CK-Link debugger
-  + T-Head or HLK CK-Link debugger
-  + Or stm32f103 bluepill with modified CK-Link lite firmware.
+  + Option 1: T-Head or HLK CK-Link debugger
+  + Option 2: STM32F103 bluepill with modified CK-Link lite firmware.
   
 <img src="https://github.com/cjacker/opensource-toolchain-w80x/raw/main/boards.png" />
 
@@ -66,8 +66,9 @@ Power supply:
 - 'wm_sdk_w806' can be used with AIR101 / 103 / W806 / W801 / W800, but lack Wi-Fi / BT libraries.
 - **'libdsp.a'** (csi-dsp) and 'secboot.bin' in wm_sdk_w806 is **close source**. If you do not use DSP, you can get rid of it. 
 - the **libraries of Wi-Fi / BT** in wm_sdk_w80x is **close source**.
-- **'c-sky debug server'** is **close source**.
+- **'C-Sky debug server'** is **close source**.
 
+Since the C-Sky debug server is **close source**, this is not a complete opensource toolchain.
 
 # Compiler
 
@@ -101,8 +102,6 @@ Use 'wm_sdk_w806' as example.
 ```
 git clone https://github.com/IOsetting/wm-sdk-w806.git
 ```
-
-
 
 
 The dir structure of 'wm_sdk_w806' SDK:
