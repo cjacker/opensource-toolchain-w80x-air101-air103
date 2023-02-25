@@ -261,9 +261,9 @@ C-Sky debug server contains a set of cklink firmware files, if you have a STM32F
 - modify address of all lines just copied, from 0x40XX to 0x00XX.
 - fix the checksum of all lines just modified.
 
-I wrote a tool to convert it automatically, you can find it in [cklink-lite-fw-convertor](https://github.com/cjacker/opensource-toolchain-w80x/tree/main/cklink-lite-fw-convertor) dir.
+I wrote a tool to convert it automatically, you can find it in [cklink-lite-fw-convertor](https://github.com/cjacker/cklink-lite-fw-convertor) repo.
 
-And the pre-converted '[cklink-lite-2.36_for-stm32f103.hex](https://raw.githubusercontent.com/cjacker/opensource-toolchain-w80x/main/cklink-lite-fw-convertor/cklink_lite-2.36_for-stm32f103.hex)' can be used to program to STM32F103 directly. If the firmware version is outdated, you can use `cklink-lite-fw-convertor` to convert the latest firmware yourself.
+And the pre-converted '[cklink-lite-2.36_for-stm32f103.hex](https://raw.githubusercontent.com/cjacker/cklink-lite-fw-convertor/main/cklink_lite-2.36_for-stm32f103.hex) can programmed to STM32F103 directly. If the firmware version is outdated, you can use `cklink-lite-fw-convertor` to convert the latest firmware yourself.
 
 After STM32F103 programmed, connect STM32F103 with your target devboard as below table and plug STM32F103 to PC USB port.
 
