@@ -48,11 +48,11 @@ Power supply:
   + HLK-W806-KIT need manual reset when programming.
   + HLK-W801-KIT devboards has some hardware issue with Linux
   + HLK-W800-KIT have base and pro version
-
+  + do NOT buy AIR105, it's based on ARM core and even didn't export the SWD interface.
 - CK-Link debugger
   + Option 1: T-Head or HLK CK-Link debugger
   + Option 2: STM32F103 bluepill with modified CK-Link lite firmware.
-  
+
 <img src="https://github.com/cjacker/opensource-toolchain-w80x/raw/main/boards.png" />
 
 # Toolchain overview
