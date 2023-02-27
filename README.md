@@ -56,7 +56,7 @@ Power supply:
 <img src="https://github.com/cjacker/opensource-toolchain-w80x/raw/main/boards.png" />
 
 # Toolchain overview
-- Compiler: csky gcc
+- Compiler: C-Sky GNU Toolchain
 - SDK : wm_sdk_w806 / wm_sdk_w80x
 - Programming: wm_tool in wm_sdk
 - Debugging: c-sky debug server / gdb
@@ -220,7 +220,7 @@ udevadm trigger
 udevadm control --reload
 ```
 
-## Use T-Head or HLK CK-Link debugger
+## Option 1 : Use T-Head or HLK CK-Link debugger
 
 The Ck-Link pinout:
 
@@ -249,7 +249,7 @@ Connect target board to CK-Link (refer to below table) and plug CK-Link to PC US
 | GND      | GND        |
 
 
-## Make your own CK-Link Lite debugger with STM32F103
+## Option 2 : Make your own CK-Link Lite debugger with STM32F103
 
 C-Sky debug server contains a set of cklink firmware files, if you have a STM32F103 devboard, you can use 'cklink_lite.hex' shipped with C-Sky debug server to make your own CK-Link debugger. 
 
