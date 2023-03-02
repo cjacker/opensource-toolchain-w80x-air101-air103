@@ -275,7 +275,7 @@ After STM32F103 programmed, connect STM32F103 with your target devboard as below
 | GND       | GND      |
 
 
-# Launch C-Sky debug server
+## Launch C-Sky debug server
 
 Then invoke C-Sky debug server as mentioned above:
 
