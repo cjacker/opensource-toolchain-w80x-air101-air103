@@ -46,15 +46,15 @@ Power supply:
 - [Hardware prerequiest](#hardware-prerequiest)
 - [Toolchain overview](#toolchain-overview)
 - [Compiler](#compiler)
-- [SDK]
+- SDK
   + [wm_sdk](#wm_sdk)
   + [LuatOS](#luatos)
     - [build from source](#build-from-source)
     - [use prebuilt release](#use-prebuilt-release)
-- [Programming]
+- Programming
   + [for wm_sdk](#for-wm_sdk)
   + [for LuatOS](#for-luatos)
-- [Debugging]
+- Debugging
   + [for wm_sdk](#for-wm_sdk-1)
     - [Install C-Sky debug server](#install-c-sky-debug-server)
     - [Option 1 : Use T-Head or HLK CK-Link debugger](#option-1--use-t-head-or-hlk-ck-link-debugger)
