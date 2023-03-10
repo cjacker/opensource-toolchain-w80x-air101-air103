@@ -42,6 +42,27 @@ Power supply:
 - Standby power consumption is less than 10uA
 
 
+# Table of contents
+- [Hardware prerequiest](#hardware-prerequiest)
+- [Toolchain overview](#toolchain-overview)
+- [Compiler](#compiler)
+- [SDK]
+  + [wm_sdk](#wm_sdk)
+  + [LuatOS](#luatos)
+    - [build from source](#build-from-source)
+    - [use prebuilt release](#use-prebuilt-release)
+- [Programming]
+  + [for wm_sdk](#for-wm_sdk)
+  + [for LuatOS](#for-luatos)
+- [Debugging]
+  + [for wm_sdk](#for-wm_sdk-1)
+    - [Install C-Sky debug server](#install-c-sky-debug-server)
+    - [Option 1 : Use T-Head or HLK CK-Link debugger](#option-1--use-t-head-or-hlk-ck-link-debugger)
+    - [Option 2 : Make your own CK-Link Lite debugger with STM32F103](#option-2--make-your-own-ck-link-lite-debugger-with-stm32f103)
+    - [Launch C-Sky debug server](#launch-c-sky-debug-server)
+    - [Debug](#debug)
+  + [for LuatOS](#for-luatos-1)
+
 # Hardware prerequiest
 - AIR 101 or 103 devboards and HLK-W800-KIT
   + I recommend AIR 101 or AIR 103 for C-Sky XT804. AIR 101 have more flash space, less ram and less pins than AIR 103.
@@ -54,7 +75,8 @@ Power supply:
   + Option 1: T-Head or HLK CK-Link debugger
   + Option 2: STM32F103 bluepill with modified CK-Link lite firmware.
 
-<img src="https://github.com/cjacker/opensource-toolchain-w80x/raw/main/boards.png" />
+<img src="./boards.png" />
+
 
 # Toolchain overview
 - Compiler: C-Sky GNU Toolchain
@@ -139,7 +161,7 @@ LuatOS is a powerful embedded Lua Engine for IoT devices, with many components a
 
 LuatOS released in source and prebuilt-binary format, if you like to use the prebuilt version for various SOC LuatOS already supported, you can ignore this section.
 
-### install xmake
+#### install xmake
 Building LuatOS requires `xmake` installed, which not shipped by most distributions. you have to install it yourself:
 ```
 $ mkdir xmake-build && cd xmake-build
@@ -170,7 +192,7 @@ $ sudo make install
 
 `xmake` and `xrepo` commands will be installed to `/usr/bin` dir.
 
-### build LuatOS
+#### build LuatOS
 
 ```
 $ mkdir luatos-build && cd luatos-build
@@ -217,8 +239,7 @@ And you will get `AIR101.fls` or `AIR103.fls`, this is the firmware we will used
 
 # Programming
 
-## for wm_sdk_w806/w80x
-
+## for wm_sdk
 Before start programming, you need connect the devboard to PC and get the USB uart device name, usually, it's `ttyUSB0`. you can find it with `ls /dev/tty*`.
 
 Then, run `make menuconfig`, goto 'Download Configuration', set 'download port' to `ttyUSB0`. Then save / exit menuconfig and program the target firmware to device by:
