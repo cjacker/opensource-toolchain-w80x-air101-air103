@@ -212,7 +212,7 @@ After download and extracted, you will find a `LuatOS-SoC_XXXX.soc` file, it's 7
 7za x LuatOS-SoC_XXXX.soc
 ```
 
-And you will get 'AIR101.fls' or 'AIR103.fls', this is the firmware we will used later.
+And you will get `AIR101.fls` or `AIR103.fls`, this is the firmware we will used later.
 
 
 # Programming
