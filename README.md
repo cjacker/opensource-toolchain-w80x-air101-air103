@@ -326,6 +326,19 @@ Using `lvgl-demo` provide with luat-utils` as example:
 ./flash-script-img air101 script-for-air101.img
 ```
 
+By the way, if you want to generate a whole image include base firmware and script image, just append script.img to base firmware as:
+```
+cat script-for-air101.img >>AIR101.fls
+```
+
+and programed as:
+```
+./wm_tool_luatos -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
+```
+
+But I don't recommend this way, since it will cause long programming time and it's not neccesary to program base firmware every time.
+
+
 # Debugging
 
 ## For wm_sdk
