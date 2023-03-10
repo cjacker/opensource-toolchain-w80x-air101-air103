@@ -1,0 +1,3 @@
+[submodule "luatos-utils"]
+	path = luatos-utils
+	url = https://github.com/cjacker/luatos-utils
