@@ -62,6 +62,8 @@ Power supply:
     - [Launch C-Sky debug server](#launch-c-sky-debug-server)
     - [Debug](#debug)
   + [for LuatOS](#for-luatos-1)
+    - [Modify RTS behavior](#modify-rts-behavior)
+    - [UART usage](#uart-usage)
 
 # Hardware prerequiest
 - AIR 101 or 103 devboards and HLK-W800-KIT
@@ -81,7 +83,7 @@ Power supply:
 # Toolchain overview
 - Compiler: C-Sky GNU Toolchain
 - SDK : wm_sdk_w806 / wm_sdk_w80x / LuatOS
-- Programming: wm_tool in wm_sdk
+- Programming: wm_tool in wm_sdk / luatos-utils for LuatOS
 - Debugging: c-sky debug server / gdb
 
 **NOTE:**
@@ -287,15 +289,17 @@ After talked with the author of LuatOS, I decided to write a set of utilities na
 git clone https://github.com/cjacker/luatos-utils.git
 cd luatos-utils
 make
+# if you want to install it system wide
+sudo make install
 ```
 
 After built successfully, you should have below commands at current dir:
-- luac : 32bit ELF build from upstream lua 5.3.6 and with `-DLUA_32BITS`.
-- mkscriptbin : convert dir to luadb binary file.
-- wm_tool_luatos : firmware pre-process and program tool.
-- gen-script-img : generate 'script.img' for AIR101 or AIR103
-- flash-script-img : flash script.img to AIR101 or AIR103
-- flash-base-firmware: flash base firmware to AIR101 or AIR103
+- luatos-luac : 32bit ELF build from upstream lua 5.3.6 and with `-DLUA_32BITS`.
+- luatos-mkscriptbin : convert dir to luadb binary file.
+- luatos-wm_tool : firmware pre-process and program tool.
+- luatos-gen-script-img : generate 'script.img' for AIR101 or AIR103
+- luatos-flash-script-img : flash script.img to AIR101 or AIR103
+- luatos-flash-base-firmware: flash base firmware to AIR101 or AIR103
 
 In general, you can treat firmwares for LuatOS as two part:
 - the base firmware, we built it in SDK section, such as 'AIR101.fls' and 'AIR103.fls'. 
@@ -306,24 +310,24 @@ The base firmware can be programmed once and only need to re-program when it has
 To program base firmware, connect the TypeC port of AIR101 devboard to PC USB port, using 'AIR101.fls' we built in SDK section as example:
 
 ```
-./wm_tool_luatos -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
+luatos-wm_tool -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
 ```
 
-In short, use the 'flash-base-firmware' script:
+In short, use the 'luatos-flash-base-firmware' script:
 ```
-./flash-base-firmware AIR101.fls
+luatos-flash-base-firmware AIR101.fls
 ```
 
 To program lua script, you need:
 - create a dir and put all lua scripts and resources into it. note, subdirs is not supported, it also not supported by upstream.
-- run `gen-script-img [air101 or air103] <source dir>`, a `script.img` will generated.
-- run `flash-script-img [air101 or air103] <script.img>` to program the `script.img` to target device.
+- run `luatos-gen-script-img [air101 or air103] <source dir>`, a `script.img` will generated.
+- run `luatos-flash-script-img [air101 or air103] <script.img>` to program the `script.img` to target device.
 
 Using `lvgl-demo` provide with luat-utils` as example:
 
 ```
-./gen-script-img air101 lvgl-demo
-./flash-script-img air101 script-for-air101.img
+luatos-gen-script-img air101 lvgl-demo
+luatos-flash-script-img air101 script-for-air101.img
 ```
 
 By the way, if you want to generate a whole image include base firmware and script image, just append script.img to base firmware as:
@@ -333,7 +337,12 @@ cat script-for-air101.img >>AIR101.fls
 
 and programed as:
 ```
-./wm_tool_luatos -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
+luatos-wm_tool -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
+```
+
+And in short:
+```
+luatos-flash-base-firmware AIR101.fls
 ```
 
 But I don't recommend this way, since it will cause long programming time and it's not neccesary to program base firmware every time.
@@ -514,7 +523,28 @@ Breakpoint 1 at 0x8011988: file main.c, line 46.
 
 ## For LuatOS
 
-LuatOS debugging heavily depends on UART print out, the default baudrate is 921600, it's defined by LuatOS base firmware for AIR101 and AIR103, I use `tio` and `picocom` as example:
+LuatOS debugging heavily depends on UART print out.
+
+### Modify RTS behavior
+
+Open serial port will cause target device RESET with Linux (Windows will not). If your devboards has RTS or DTR pin connect to RESET pin of the chip, every time the serial port opened, it will reset target device.
+
+Refer to [https://stackoverflow.com/questions/5090451/how-to-open-serial-port-in-linux-without-changing-any-pin](https://stackoverflow.com/questions/5090451/how-to-open-serial-port-in-linux-without-changing-any-pin) for more info.
+
+For LuatOS, since it heavily depend on UART log for debugging and monitoring, this hehavior is unacceptable.
+
+For Air 101 and 103 board, there is CH34X UART chip on board, we can change this behavior by modify source code of `ch341` driver.
+
+You can download the `ch341.c` from `drivers/usb/serial/ch341.c` of upstream kernel, and find `ch341_dtr_rts` function, comment out all contents of this function and put it in `ch341-mod` dir of [luatos-utils](https://github.com/cjacker/luatos-utils).
+
+Then type `make` to build the new driver, it will build and rename the driver to `ch341-uart.ko`. you can :
+- either blacklist original `ch341.ko` and install this new driver.
+- or `sudo rmmod ch341.ko && insmod ./ch341-kmod/ch341-uart.ko` everytime when you need it.
+
+
+### UART usage 
+
+The default baudrate is 921600, it's defined by LuatOS base firmware for AIR101 and AIR103, I use `tio` and `picocom` as example:
 
 tio:
 ```
