@@ -227,8 +227,8 @@ Because the flash size of AIR103 is 1M and smaller than 2M of AIR101, if you enc
 ### use prebuilt release
 LuatOS upstream released a set of pre-built firmwares for various SOC and OpenLuat devboards, you can download it from [LuatOS project](https://gitee.com/openLuat/LuatOS/releases) and use these pre-built firmware directly.
 
-For AIR101 : https://gitee.com/openLuat/LuatOS/releases/download/v0007.air101.v0015/core_V0015.zip
-For AIR103 : https://gitee.com/openLuat/LuatOS/releases/download/v0007.air103.v0015/core_V0015.zip
+- For AIR101 : https://gitee.com/openLuat/LuatOS/releases/download/v0007.air101.v0015/core_V0015.zip
+- For AIR103 : https://gitee.com/openLuat/LuatOS/releases/download/v0007.air103.v0015/core_V0015.zip
 
 After download and extracted, you will find a `LuatOS-SoC_XXXX.soc` file, it's 7z file and can be extracted as:
 
@@ -301,11 +301,11 @@ After built successfully, you should have below commands at current dir:
 - luatos-flash-script-img : flash script.img to AIR101 or AIR103
 - luatos-flash-base-firmware: flash base firmware to AIR101 or AIR103
 
-In general, you can treat firmwares for LuatOS as two part:
+In general, you can treat firmwares of LuatOS as two part:
 - the base firmware, we built it in SDK section, such as 'AIR101.fls' and 'AIR103.fls'. 
-- the script firmware, lua script you write to run on base firmware.
+- the script firmware, lua script you write to run upon base firmware.
 
-The base firmware can be programmed once and only need to re-program when it has a new release. The script firmware is what we will write and maybe will program many times.
+The base firmware can be programmed once and only need to re-program when it has a new release. The script firmware is what we will write and maybe it will program many times.
 
 To program base firmware, connect the TypeC port of AIR101 devboard to PC USB port, using 'AIR101.fls' we built in SDK section as example:
 
@@ -319,7 +319,7 @@ luatos-flash-base-firmware AIR101.fls
 ```
 
 To program lua script, you need:
-- create a dir and put all lua scripts and resources into it. note, subdirs is not supported, it also not supported by upstream.
+- create a dir and put all lua scripts and resources into it. NOTE, subdirs is not supported, it also not supported by upstream.
 - run `luatos-gen-script-img [air101 or air103] <source dir>`, a `script.img` will generated.
 - run `luatos-flash-script-img [air101 or air103] <script.img>` to program the `script.img` to target device.
 
@@ -330,16 +330,15 @@ luatos-gen-script-img air101 lvgl-demo
 luatos-flash-script-img air101 script-for-air101.img
 ```
 
-By the way, if you want to generate a whole image include base firmware and script image, just append script.img to base firmware as:
+By the way, if you want to generate a whole image contains both base firmware and script firmware, just append script.img to base firmware as:
 ```
 cat script-for-air101.img >>AIR101.fls
 ```
 
-and programed as:
+And programed as:
 ```
 luatos-wm_tool -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
 ```
-
 And in short:
 ```
 luatos-flash-base-firmware AIR101.fls
@@ -526,21 +525,19 @@ Breakpoint 1 at 0x8011988: file main.c, line 46.
 LuatOS debugging heavily depends on UART print out.
 
 ### Modify RTS behavior
-
-Open serial port will cause target device RESET with Linux (Windows will not). If your devboards has RTS or DTR pin connect to RESET pin of the chip, every time the serial port opened, it will reset target device.
+The behaviors when openning serial port from Windows and Linux are different. If your devboard has RTS or DTR pin connect to RESET pin of the chip, it will cause target device RESET with Linux. every time the serial port opened, target device just reset.
 
 Refer to [https://stackoverflow.com/questions/5090451/how-to-open-serial-port-in-linux-without-changing-any-pin](https://stackoverflow.com/questions/5090451/how-to-open-serial-port-in-linux-without-changing-any-pin) for more info.
 
-For LuatOS, since it heavily depend on UART log for debugging and monitoring, this hehavior is unacceptable.
+It's a design of Linux and not a bug, but for LuatOS, since it heavily depend on UART log for debugging and monitoring, this hehavior is unacceptable.
 
-For Air 101 and 103 board, there is CH34X UART chip on board, we can change this behavior by modify source code of `ch341` driver.
+For Air 101 and 103 board, there is CH34X UART chip on board, we can change this behavior by modify source code of `ch341` driver. (or modify the hardware and do NOT do that)
 
-You can download the `ch341.c` from `drivers/usb/serial/ch341.c` of upstream kernel, and find `ch341_dtr_rts` function, comment out all contents of this function and put it in `ch341-mod` dir of [luatos-utils](https://github.com/cjacker/luatos-utils).
+You can download the `ch341.c` from the git of upstream kernel (`drivers/usb/serial/ch341.c`), and find `ch341_dtr_rts` function, comment out all contents of this function and put it in `ch341-mod` dir of [luatos-utils](https://github.com/cjacker/luatos-utils).
 
 Then type `make` to build the new driver, it will build and rename the driver to `ch341-uart.ko`. you can :
-- either blacklist original `ch341.ko` and install this new driver.
+- either blacklist original `ch341.ko`, install and use this new driver.
 - or `sudo rmmod ch341.ko && insmod ./ch341-kmod/ch341-uart.ko` everytime when you need it.
-
 
 ### UART usage 
 
