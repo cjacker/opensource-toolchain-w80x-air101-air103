@@ -12,7 +12,7 @@ W80x line-up include 3 microcontrollers:
 All these chips are available as devboards (about 1 $).
 
 Besides W80x, there is another vendor 'Luat' also made MCU based on XT-E804, includes AIR101 and 103.
-- AIR101 - XT-E804, QFN32, 4mmx4mm. 2M FLASH, 176K RAM.
+- AIR101 - XT-E804, QFN32, 4mmx4mm. **2M FLASH, 176K RAM**.
 - AIR103 - XT-E804, QFN56, 6mmx6mm. 1M FLASH, 288K RAM. **AIR103 = W806**
 
 All these 2 chips are also availble as devboards (about 1 $)
@@ -44,11 +44,12 @@ Power supply:
 
 # Hardware prerequiest
 - AIR 101 or 103 devboards and HLK-W800-KIT
+  + I recommend AIR 101 or AIR 103 for C-Sky XT804. AIR 101 have more flash space, less ram and less pins than AIR 103.
   + HLK-W806-KIT devboards is not USB type-c and not suite for breadboard.
   + HLK-W806-KIT need manual reset when programming.
   + HLK-W801-KIT devboards has some hardware issue with Linux
   + HLK-W800-KIT have base and pro version
-  + do NOT buy AIR105, it's based on ARM core and even didn't export the SWD interface.
+  + do NOT buy **AIR105** for XT804, it's based on ARM core and even didn't export the SWD interface.
 - CK-Link debugger
   + Option 1: T-Head or HLK CK-Link debugger
   + Option 2: STM32F103 bluepill with modified CK-Link lite firmware.
@@ -57,7 +58,7 @@ Power supply:
 
 # Toolchain overview
 - Compiler: C-Sky GNU Toolchain
-- SDK : wm_sdk_w806 / wm_sdk_w80x
+- SDK : wm_sdk_w806 / wm_sdk_w80x / LuatOS
 - Programming: wm_tool in wm_sdk
 - Debugging: c-sky debug server / gdb
 
@@ -90,6 +91,7 @@ The triplet of C-Sky GNU toolchain is **csky-abiv2-elf**.
 
 # SDK
 
+## wm_sdk
 As mentioned above:
 
 - [wm_sdk_w806](https://github.com/IOsetting/wm-sdk-w806) can be used for W806 / AIR101 / AIR103, you can also use it with W801 / W800, but lack Wi-Fi / BT support. 
@@ -127,7 +129,95 @@ To build the 'user application codes', type 'make' directly. the target file 'W8
 
 You can use `make menuconfig` to change some options of the SDK. for more usage, try `make help`.
 
+## LuatOS
+
+LuatOS is a powerful embedded Lua Engine for IoT devices, with many components and low memory requirements (16K RAM, 128K Flash), it is developed by OpenLuat community and by default support almost all devboards from OpenLuat, such as AIR 101 and AIR 103, also support various ARM based MCU. Since this tutorial is for C-Sky XT804, I will focus on AIR 101 and 103. 
+
+**Note :** LuatOS also can be used with W80X devboard.
+
+### build from source
+
+LuatOS released in source and prebuilt-binary format, if you like to use the prebuilt version for various SOC LuatOS already supported, you can ignore this section.
+
+### install xmake
+Building LuatOS requires `xmake` installed, which not shipped by most distributions. you have to install it yourself:
+```
+$ mkdir xmake-build && cd xmake-build
+$ git clone https://github.com/xmake-io/xmake.git
+$ git clone https://github.com/xmake-io/xmake-core-lua-cjson.git
+$ git clone https://github.com/xmake-io/xmake-core-lua.git
+$ git clone https://github.com/xmake-io/xmake-core-luajit.git
+$ git clone https://github.com/xmake-io/xmake-core-pdcurses.git
+$ git clone https://github.com/xmake-io/xmake-core-sv.git
+$ git clone https://github.com/xmake-io/xmake-core-lz4.git
+$ git clone https://github.com/tboox/tbox.git
+
+$ cd xmake
+$ git submodule init
+$ git config submodule.core/src/lua-cjson/lua-cjson.url "$(pwd)/../xmake-core-lua-cjson"
+$ git config submodule.core/src/lua/lua.url "$(pwd)/../xmake-core-lua"
+$ git config submodule.core/src/luajit/luajit.url "$(pwd)/../xmake-core-luajit"
+$ git config submodule.core/src/pdcurses/pdcurses.url "$(pwd)/../xmake-core-pdcurses"
+$ git config submodule.core/src/sv/sv.url "$(pwd)/../xmake-core-sv"
+$ git config submodule.core/src/lz4/lz4.url "$(pwd)/../xmake-core-lz4"
+$ git config submodule.core/src/tbox/tbox.url "$(pwd)/../tbox"
+$ git submodule update
+
+$ ./configure --prefix=/usr
+$ make
+$ sudo make install
+```
+
+`xmake` and `xrepo` commands will be installed to `/usr/bin` dir.
+
+### build LuatOS
+
+```
+$ mkdir luatos-build && cd luatos-build
+$ git clone https://gitee.com/openLuat/LuatOS.git
+$ git clone https://gitee.com/openLuat/luatos-soc-air101.git
+```
+There should have 2 dirs in luatos-build dir, `LuatOS` and `luatos-soc-air101`, don't rename any of them.
+
+To build AIR101 firmware:
+
+```
+cd luatos-soc-air101
+gcc -o tools/xt804/wm_tool tools/xt804/wm_tool.c
+xmake
+```
+
+After building finished, the firmwares located at `build/out` dir, what we need is `AIR101.fls` and `LuatOS-SoC_V0016_AIR101.soc`. `soc` file is a 7za file and can be extracted by `7za x`, it can be programed by LuatTools (only have windows support). `AIR101.fls` is the firmware we will used later.
+
+To build AIR103 firmware, you need :
+
+```
+cd luatos-soc-air101
+sed -i 's/#define AIR101/#define AIR103/g' app/port/luat_conf_bsp.h
+gcc -o tools/xt804/wm_tool tools/xt804/wm_tool.c
+xmake
+```
+
+Because the flash size of AIR103 is 1M and smaller than 2M of AIR101, if you encouter `I-SRAM' overflowed by  XXXX` error, you need edit `app/port/luat_conf_bsp.h` to comment out some features, such as `u8g2/lcd/lvgl`.
+
+### use prebuilt release
+LuatOS upstream released a set of pre-built firmwares for various SOC and OpenLuat devboards, you can download it from [LuatOS project](https://gitee.com/openLuat/LuatOS/releases) and use these pre-built firmware directly.
+
+For AIR101 : https://gitee.com/openLuat/LuatOS/releases/download/v0007.air101.v0015/core_V0015.zip
+For AIR103 : https://gitee.com/openLuat/LuatOS/releases/download/v0007.air103.v0015/core_V0015.zip
+
+After download and extracted, you will find a `LuatOS-SoC_XXXX.soc` file, it's 7z file and can be extracted as:
+
+```
+7za x LuatOS-SoC_XXXX.soc
+```
+
+And you will get 'AIR101.fls' or 'AIR103.fls', this is the firmware we will used later.
+
+
 # Programming
+
+## for wm_sdk_w806/w80x
 
 Before start programming, you need connect the devboard to PC and get the USB uart device name, usually, it's `ttyUSB0`. you can find it with `ls /dev/tty*`.
 
@@ -163,7 +253,61 @@ For AIR 101 / 103 devboards and W801 / W800 devboards, the RTS pin of on-board c
 sed -i 's/-rs at/-rs rts/g' tools/W806/rules.mk
 ```
 
+
+## for LuatOS
+
+LuatOS hasn't a standard programming tool, because it's a software and not a hardware. how to program it depends on specific hardware platform. For ARM based SOC, it can be programmbed by CMSIS-DAP, ST-Link, etc. For AIR101 / 103, since it's C-Sky XT804, LuatOS will use `wm_tool` to program to target device, actually we already use `wm_tool` with wm_sdk.
+
+LuatTools is close source flash tool for Windows provided by LuatOS upstream, and it can not support Linux even with 'wine'. Honestly speaking, the linux supporting from upstream is not very well since they all may use windows as first development platform.
+
+After talked with the author of LuatOS, I decided to write a set of utilities named [luatos-utils](https://github.com/cjacker/luatos-utils) for linux to make things easy.
+
+```
+git clone https://github.com/cjacker/luatos-utils.git
+cd luatos-utils
+make
+```
+
+After built successfully, you should have below commands at current dir:
+- luac : 32bit ELF build from upstream lua 5.3.6 and with `-DLUA_32BITS`.
+- mkscriptbin : convert dir to luadb binary file.
+- wm_tool_luatos : firmware pre-process and program tool.
+- gen-script-img : generate 'script.img' for AIR101 or AIR103
+- flash-script-img : flash script.img to AIR101 or AIR103
+- flash-base-firmware: flash base firmware to AIR101 or AIR103
+
+In general, you can treat firmwares for LuatOS as two part:
+- the base firmware, we built it in SDK section, such as 'AIR101.fls' and 'AIR103.fls'. 
+- the script firmware, lua script you write to run on base firmware.
+
+The base firmware can be programmed once and only need to re-program when it has a new release. The script firmware is what we will write and maybe will program many times.
+
+To program base firmware, connect the TypeC port of AIR101 devboard to PC USB port, using 'AIR101.fls' we built in SDK section as example:
+
+```
+./wm_tool_luatos -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
+```
+
+In short, use the 'flash-base-firmware' script:
+```
+./flash-base-firmware AIR101.fls
+```
+
+To program lua script, you need:
+- create a dir and put all lua scripts and resources into it. note, subdirs is not supported, it also not supported by upstream.
+- run `gen-script-img [air101 or air103] <source dir>`, a `script.img` will generated.
+- run `flash-script-img [air101 or air103] <script.img>` to program the `script.img` to target device.
+
+Using `lvgl-demo` provide with luat-utils` as example:
+
+```
+./gen-script-img air101 lvgl-demo
+./flash-script-img air101 script-for-air101.img
+```
+
 # Debugging
+
+## For wm_sdk
 
 To debugging XT-E804 based MCU, you have to use a CK-Link debugger and T-Head debug server (close source software).
 
@@ -220,7 +364,7 @@ udevadm trigger
 udevadm control --reload
 ```
 
-## Option 1 : Use T-Head or HLK CK-Link debugger
+### Option 1 : Use T-Head or HLK CK-Link debugger
 
 The Ck-Link pinout:
 
@@ -249,7 +393,7 @@ Connect target board to CK-Link (refer to below table) and plug CK-Link to PC US
 | GND      | GND        |
 
 
-## Option 2 : Make your own CK-Link Lite debugger with STM32F103
+### Option 2 : Make your own CK-Link Lite debugger with STM32F103
 
 C-Sky debug server contains a set of cklink firmware files, if you have a STM32F103 devboard, you can use 'cklink_lite.hex' shipped with C-Sky debug server to make your own CK-Link debugger. 
 
@@ -275,7 +419,7 @@ After STM32F103 programmed, connect STM32F103 with your target devboard as below
 | GND       | GND      |
 
 
-## Launch C-Sky debug server
+### Launch C-Sky debug server
 
 Then invoke C-Sky debug server as mentioned above:
 
@@ -313,7 +457,7 @@ GDB connection command for CPUs(CPU0):
         target remote 127.0.0.1:1025
 ```
 
-## Debug
+### Debug
 
 Then open new terminal window, and run:
 
@@ -333,4 +477,18 @@ Breakpoint 1 at 0x8011988: file main.c, line 46.
 (cskygdb) c
 ```
 
+
+## For LuatOS
+
+LuatOS debugging heavily depends on UART print out, the default baudrate is 921600, it's defined by LuatOS base firmware for AIR101 and AIR103, I use `tio` and `picocom` as example:
+
+tio:
+```
+tio -b 921600 /dev/ttyUSB0 -m INLCRNL
+```
+
+picocom:
+```
+picocom -b 921600 /dev/ttyUSB0 --imap lfcrlf
+```
 
