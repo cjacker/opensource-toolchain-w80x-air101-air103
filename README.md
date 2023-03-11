@@ -211,7 +211,7 @@ gcc -o tools/xt804/wm_tool tools/xt804/wm_tool.c
 xmake
 ```
 
-After building finished, the firmwares located at `build/out` dir, what we need is `AIR101.fls` and `LuatOS-SoC_V0016_AIR101.soc`. `soc` file is a 7za file and can be extracted by `7za x`, it can be programed by LuatTools (only have windows support). `AIR101.fls` is the firmware we will used later.
+After building finished, the firmwares located at `build/out` dir. What we need is `LuatOS-SoC_V0016_AIR101.soc` file. it can be programed by LuatTools on Windows and [luatos-utils](https://github.com/cjacker/luatos-utils) on Linux.
 
 To build AIR103 firmware, you need :
 
@@ -225,19 +225,13 @@ xmake
 Because the flash size of AIR103 is 1M and smaller than 2M of AIR101, if you encouter `I-SRAM' overflowed by  XXXX` error, you need edit `app/port/luat_conf_bsp.h` to comment out some features, such as `u8g2/lcd/lvgl`.
 
 ### use prebuilt release
+
 LuatOS upstream released a set of pre-built firmwares for various SOC and OpenLuat devboards, you can download it from [LuatOS project](https://gitee.com/openLuat/LuatOS/releases) and use these pre-built firmware directly.
 
 - For AIR101 : https://gitee.com/openLuat/LuatOS/releases/download/v0007.air101.v0015/core_V0015.zip
 - For AIR103 : https://gitee.com/openLuat/LuatOS/releases/download/v0007.air103.v0015/core_V0015.zip
 
-After download and extracted, you will find a `LuatOS-SoC_XXXX.soc` file, it's 7z file and can be extracted as:
-
-```
-7za x LuatOS-SoC_XXXX.soc
-```
-
-And you will get `AIR101.fls` or `AIR103.fls`, this is the firmware we will used later.
-
+After download and extracted, you will find a `LuatOS-SoC_XXXX.soc` file.
 
 # Programming
 
@@ -279,11 +273,20 @@ sed -i 's/-rs at/-rs rts/g' tools/W806/rules.mk
 
 ## for LuatOS
 
-LuatOS hasn't a standard programming tool, because it's a software and not a hardware. how to program it depends on specific hardware platform. For ARM based SOC, it can be programmbed by CMSIS-DAP, ST-Link, etc. For AIR101 / 103, since it's C-Sky XT804, LuatOS will use `wm_tool` to program to target device, actually we already use `wm_tool` with wm_sdk.
+LuatOS is a OS software and not a hardware, how to program it heavily depends on specific hardware platform. 
+- For ARM based SOC, it can be programmbed by CMSIS-DAP, ST-Link, etc. 
+- For ESP32, it can be programmed by `esptool.py`. 
+- For AIR101 / 103, since it's based on C-Sky XT804, it can be programmed by `wm_tool`.
 
-LuatTools is close source flash tool for Windows provided by LuatOS upstream, and it can not support Linux even with 'wine'. Honestly speaking, the linux supporting from upstream is not very well since they all may use windows as first development platform.
+In general, you can treat firmwares of LuatOS as two part:
+- the base firmware, upstream shipped the pre-built release in `soc` file format, and you can also build it yourself.
+- the script firmware, lua script you write to run upon base firmware.
 
-After talked with the author of LuatOS, I decided to write a set of utilities named [luatos-utils](https://github.com/cjacker/luatos-utils) for linux to make things easy.
+The base firmware can be programmed once and only need to re-program when it has update. The script firmware is what we will write and will be programmed to target device many times.
+
+LuatTools is upstream close source flash tool for Windows provided by LuatOS upstream, and it can not support Linux even with 'wine'. Honestly speaking, the linux supporting from upstream is not very well since they all may use windows as first development platform.
+
+After talked with the author of LuatOS, I decided to write a set of utilities named [luatos-utils](https://github.com/cjacker/luatos-utils) for linux to make things easier.
 
 ```
 git clone https://github.com/cjacker/luatos-utils.git
@@ -294,57 +297,47 @@ sudo make install
 ```
 
 After built successfully, you should have below commands at current dir:
-- luatos-luac : 32bit ELF build from upstream lua 5.3.6 and with `-DLUA_32BITS`.
-- luatos-mkscriptbin : convert dir to luadb binary file.
-- luatos-wm_tool : firmware pre-process and program tool.
-- luatos-gen-script-img : generate 'script.img' for AIR101 or AIR103
-- luatos-flash-script-img : flash script.img to AIR101 or AIR103
-- luatos-flash-base-firmware: flash base firmware to AIR101 or AIR103
+- luatos-gen-script-img : generate 'script.img' for AIR101/103 and ESP32S3/C3.
+- luatos-flash-script-img : flash script.img to AIR101/103 and script.bin to ESP32S3/C3.
+- luatos-flash-soc : flash base firmware to AIR101/103 and ESP32S3/C3.
 
-In general, you can treat firmwares of LuatOS as two part:
-- the base firmware, we built it in SDK section, such as 'AIR101.fls' and 'AIR103.fls'. 
-- the script firmware, lua script you write to run upon base firmware.
 
-The base firmware can be programmed once and only need to re-program when it has a new release. The script firmware is what we will write and maybe it will program many times.
-
-To program base firmware, connect the TypeC port of AIR101 devboard to PC USB port, using 'AIR101.fls' we built in SDK section as example:
+To program base firmware, connect the TypeC port of AIR101 devboard to PC USB port, use pre-built `LuatOS-SoC_V0015_AIR101.soc` as example, You can :
 
 ```
+7za x LuatOS-SoC_V0015_AIR101.soc
 luatos-wm_tool -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
 ```
 
-In short, use the 'luatos-flash-base-firmware' script:
+Or use `luatos-flash-soc` from [luatos-utils](https://github.com/cjacker/luatos-utils):
+
 ```
-luatos-flash-base-firmware AIR101.fls
+luatos-flash-soc LuatOS-SoC_V0015_AIR101.soc
 ```
 
-To program lua script, you need:
+To generate and program lua script image, you need:
 - create a dir and put all lua scripts and resources into it. NOTE, subdirs is not supported, it also not supported by upstream.
 - run `luatos-gen-script-img [air101 or air103] <source dir>`, a `script.img` will generated.
 - run `luatos-flash-script-img [air101 or air103] <script.img>` to program the `script.img` to target device.
 
-Using `lvgl-demo` provide with luat-utils` as example:
+Using `lcd-demo` provide with `luat-utils` as example:
 
 ```
-luatos-gen-script-img air101 lvgl-demo
-luatos-flash-script-img air101 script-for-air101.img
+luatos-gen-script-img air101 lcd-demo
+luatos-flash-script-img air101 script-lcd-demo-air101.img
 ```
 
-By the way, if you want to generate a whole image contains both base firmware and script firmware, just append script.img to base firmware as:
+By the way, if you want to generate a whole image contains both base firmware and script firmware, just append `script-lcd-demo-air101.img` to base firmware as:
 ```
-cat script-for-air101.img >>AIR101.fls
+cat script-lcd-demo-air101.img >>AIR101.fls
 ```
 
 And programed as:
 ```
 luatos-wm_tool -ds 2M -c ttyUSB0 -ws 115200 -rs rts -dl AIR101.fls
 ```
-And in short:
-```
-luatos-flash-base-firmware AIR101.fls
-```
 
-But I don't recommend this way, since it will cause long programming time and it's not neccesary to program base firmware every time.
+But I don't recommend this way, since it will cause more programming time and it's not neccesary to program the base firmware every time.
 
 
 # Debugging
